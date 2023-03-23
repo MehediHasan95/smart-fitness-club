@@ -2,12 +2,13 @@ import { faSignOut } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { auth } from "../../Firebase/FirebaseConfig";
 
 const AdminDashboard = () => {
   const [user, loading] = useAuthState(auth);
   const [signOut] = useSignOut(auth);
+  const navigate = useNavigate();
   return (
     <div>
       <div className="grid col-span-1 lg:grid-cols-5 lg:min-h-screen">
@@ -65,7 +66,10 @@ const AdminDashboard = () => {
         <div className="col-span-1 lg:col-span-4 pr-3">
           <div className="py-2">
             <button
-              onClick={() => signOut()}
+              onClick={() => {
+                signOut();
+                navigate("/");
+              }}
               className="flex justify-center items-center ml-auto hover:text-red-600 hover:font-bold"
             >
               <span className="mr-1">LogOut</span>
