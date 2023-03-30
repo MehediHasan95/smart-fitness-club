@@ -15,8 +15,16 @@
   counter-increment: serial-number;
   content: counter(serial-number) "";
 }
-
 .list li::before {
   counter-increment: serial-number;
   content: counter(serial-number) ". ";
+}
+
+tableSl {
+  counter-reset: serial-number;
+}
+
+.tableSl td::before {
+  counter-increment: serial-number;
+  content: counter(serial-number);
 }

@@ -5,8 +5,11 @@ import AuthList from "../Components/Admin/AuthList";
 import Notices from "../Components/Admin/Notices";
 import Authentication from "../Components/Authentication/Authentication";
 import NotFound from "../Components/Home/NotFound";
+import UserServices from "../Components/Home/UserServices";
 import TrainerDashboard from "../Components/Trainer/TrainerDashboard";
 import UserDashboard from "../Components/Users/UserDashboard";
+import UserNotices from "../Components/Users/UserNotices";
+import UserProfile from "../Components/Users/UserProfile";
 import Main from "../Layout/Main";
 import PrivateRouter from "./PrivateRouter";
 
@@ -22,7 +25,16 @@ const router = createBrowserRouter([
         <UserDashboard />
       </PrivateRouter>
     ),
-    children: [{}],
+    children: [
+      {
+        path: "profile",
+        element: <UserProfile />,
+      },
+      {
+        path: "notice",
+        element: <UserNotices />,
+      },
+    ],
   },
   {
     path: "/trainer-dashboard",
@@ -54,6 +66,14 @@ const router = createBrowserRouter([
         element: <Notices />,
       },
     ],
+  },
+  {
+    path: "/user-services/:id",
+    element: (
+      <PrivateRouter>
+        <UserServices />
+      </PrivateRouter>
+    ),
   },
   {
     path: "/authentication",

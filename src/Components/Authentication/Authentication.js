@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { Oval } from "react-loader-spinner";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { auth, db } from "../../Firebase/FirebaseConfig";
 import {
   createUserWithEmailAndPassword,
@@ -12,16 +12,24 @@ import { toast } from "react-hot-toast";
 import { AuthApi } from "../../Api/AuthApi";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { GlobalContext } from "../../Context/ContextProvider";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 const Authentication = () => {
   const [toggle, setToggle] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [spinner, setSpinner] = useState(false);
+  const [user, loading] = useAuthState(auth);
 
   const { create } = useContext(GlobalContext);
   const navigate = useNavigate();
 
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
+
+  // if (user) {
+  //   navigate(from, { replace: true });
+  // }
   // main state
   const [role, setRole] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -98,7 +106,7 @@ const Authentication = () => {
               setSpinner(false);
               if (result) {
                 if (role === "user") {
-                  navigate("/user-dashboard");
+                  navigate("/user-dashboard/profile");
                 } else if (role === "trainer") {
                   navigate("/trainer-dashboard");
                 } else if (role === "admin") {
