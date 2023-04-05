@@ -20,11 +20,20 @@
   content: counter(serial-number) ". ";
 }
 
-tableSl {
+.features-list {
+  counter-reset: section;
+}
+
+.features-list li::before {
+  counter-increment: section;
+  content: counter(section) ". ";
+}
+
+.tableSl {
   counter-reset: serial-number;
 }
 
-.tableSl td::before {
+.tableSl td:first-child:before {
   counter-increment: serial-number;
   content: counter(serial-number);
 }

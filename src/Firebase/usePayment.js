@@ -4,17 +4,20 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "./FirebaseConfig";
 
 const usePayment = () => {
-  const [payment, setPayment] = useState([]);
+  const [paymentCollection, setPaymentCollection] = useState([]);
   const [user] = useAuthState(auth);
   useEffect(() => {
     onSnapshot(
-      query(collection(db, `paymentCollection/${user?.uid}/paymentList`)),
+      query(
+        collection(db, `paymentCollection/${user?.uid}/list`),
+        orderBy("create", "desc")
+      ),
       (snapshot) => {
-        setPayment(snapshot.docs.map((e) => e.data()));
+        setPaymentCollection(snapshot.docs.map((e) => e.data()));
       }
     );
   }, [user]);
-  return [payment, setPayment];
+  return [paymentCollection, setPaymentCollection];
 };
 
 export default usePayment;

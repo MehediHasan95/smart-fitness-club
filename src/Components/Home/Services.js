@@ -4,10 +4,9 @@ import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import { GlobalContext } from "../../Context/ContextProvider";
-import UserServices from "./UserServices";
 
 const Services = () => {
-  const { serviceCollection } = useContext(GlobalContext);
+  const { serviceCollection, user } = useContext(GlobalContext);
   const navigate = useNavigate();
   const settings = {
     dots: true,
@@ -43,10 +42,6 @@ const Services = () => {
     ],
   };
 
-  const handleGetStarted = (id) => {
-    // navigate("/user-services");
-  };
-
   return (
     <div className="px-5 lg:px-20 mt-20" id="services">
       <h1 className="text-center text-3xl uppercase text-orange mb-10">
@@ -78,6 +73,7 @@ const Services = () => {
                   ))}
                 </ul>
               </div>
+
               <button
                 onClick={() => navigate(`/user-services/${e.id}`)}
                 className="bg-orange text-white my-5 px-4 py-2 hover:bg-deepOrange hover:scale-105 duration-300 hover:duration-300 border-0 left-24 right-24 outline-none rounded absolute bottom-0"

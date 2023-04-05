@@ -3,20 +3,17 @@ import { loadStripe } from "@stripe/stripe-js";
 import React from "react";
 import CheckoutForm from "./CheckoutForm";
 
-const Payment = ({ payment, selectTrainer, endingDate, today }) => {
+const Payment = ({ serviceDetails }) => {
   const stripePromise = loadStripe(
-    "pk_test_51LWvsNLMcriZxEttA38fplrKRNWlpUER5KuwivRiWd5ukwv25KQZIMZ1jJ4ZytNmSDqYTVhmS1PUzx2R3eOGAtFF00uEKhILxq"
+    "pk_test_51MqYWOIkb8dsmfJkn85XyZw2pfTFXaD96yYrukGo502RGXvEJZOR2mWQ3UjFHAPBo1jpQ4nT6rAEGcMIbMu1v4Zm00owIgXKJx"
   );
 
   return (
-    <Elements stripe={stripePromise}>
-      <CheckoutForm
-        pay={payment}
-        selectTrainer={selectTrainer}
-        endingDate={endingDate}
-        today={today}
-      />
-    </Elements>
+    <div className="bg-gray-700 rounded-lg p-5 w-3/4 mx-auto shadow">
+      <Elements stripe={stripePromise}>
+        <CheckoutForm serviceDetails={serviceDetails} />
+      </Elements>
+    </div>
   );
 };
 

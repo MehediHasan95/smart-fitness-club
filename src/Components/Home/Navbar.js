@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link as ScrollLink } from "react-scroll";
 import { Link } from "react-router-dom";
+import { GlobalContext } from "../../Context/ContextProvider";
 
 const Navbar = () => {
+  const { user, userPhoto } = useContext(GlobalContext);
+
   return (
     <div className="lg:px-20 navbar bg-raisinBlack text-white" id="home">
       <div className="w-full lg:navbar-start">
@@ -130,9 +133,25 @@ const Navbar = () => {
               </ScrollLink>
             </li>
 
-            <li className="ml-7 hover:text-orange hover:font-bold hover:scale-105 duration-300 hover:duration-300">
-              <Link to="/authentication">Login</Link>
-            </li>
+            {user ? (
+              user?.photoURL === userPhoto ? (
+                <li className="ml-7 hover:text-orange hover:font-bold hover:scale-105 duration-300 hover:duration-300">
+                  <Link to="/user-dashboard/profile">U.Dashboard</Link>
+                </li>
+              ) : user?.photoURL === null ? (
+                <li className="ml-7 hover:text-orange hover:font-bold hover:scale-105 duration-300 hover:duration-300">
+                  <Link to="/admin-dashboard">A.Dashboard</Link>
+                </li>
+              ) : (
+                <li className="ml-7 hover:text-orange hover:font-bold hover:scale-105 duration-300 hover:duration-300">
+                  <Link to="/trainer-dashboard">T.Dashboard</Link>
+                </li>
+              )
+            ) : (
+              <li className="ml-7 hover:text-orange hover:font-bold hover:scale-105 duration-300 hover:duration-300">
+                <Link to="/authentication">Login</Link>
+              </li>
+            )}
           </ul>
         </div>
       </div>

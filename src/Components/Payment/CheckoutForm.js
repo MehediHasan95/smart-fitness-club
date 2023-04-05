@@ -1,71 +1,148 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "../../Firebase/FirebaseConfig";
-import { CreatePaymentApi } from "../../Api/PaymentApi";
+import { AppPaymentApi } from "../../Api/PaymentApi";
+import { Oval } from "react-loader-spinner";
+import { addShareDataWithTrainer } from "../../Api/addShareDataWithTrainer";
+import { GlobalContext } from "../../Context/ContextProvider";
+import PinGenerate from "../Utilities/PinGenerate.js";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../../Firebase/FirebaseConfig";
 
-import { toast } from "react-hot-toast";
-
-const CheckoutForm = ({ pay, selectTrainer, endingDate, today }) => {
-  const [paymentConfirm, setPaymentConfirm] = useState({});
-  const [user] = useAuthState(auth);
-  const [errorMsg, setErrorMsg] = useState("");
+const CheckoutForm = ({ serviceDetails }) => {
   const stripe = useStripe();
   const elements = useElements();
+  const [paymentError, setpaymentError] = useState("");
+  const [clientSecret, setClientSecret] = useState("");
+  const [paymentSuccess, setpaymentSuccess] = useState({});
+  const [toggle, setToggle] = useState(false);
+  const { user } = useContext(GlobalContext);
 
-  const { displayName, email, uid } = user;
-  const { id } = paymentConfirm;
+  useEffect(() => {
+    if (serviceDetails.amount) {
+      fetch("http://localhost:5000/create-payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ price: serviceDetails.amount }),
+      })
+        .then((res) => res.json())
+        .then((data) => setClientSecret(data.clientSecret));
+    }
+  }, [serviceDetails]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (elements == null) {
+    setToggle(true);
+    if (!stripe || !elements) {
+      setToggle(false);
       return;
     }
-    const { error, paymentMethod } = await stripe.createPaymentMethod({
+    const card = elements.getElement(CardElement);
+    if (card == null) {
+      setToggle(false);
+      return;
+    }
+    const { error } = await stripe.createPaymentMethod({
       type: "card",
-      card: elements.getElement(CardElement),
+      card,
     });
     if (error) {
-      setErrorMsg(error?.message);
+      setToggle(false);
+      setpaymentError(error.message);
     } else {
-      setPaymentConfirm(paymentMethod);
-      setErrorMsg("");
-    }
+      stripe
+        .confirmCardPayment(clientSecret, {
+          payment_method: {
+            card: card,
+            billing_details: {
+              name: user.displayName,
+              email: user.email,
+            },
+          },
+        })
+        .then(function (result) {
+          setToggle(false);
+          setpaymentSuccess(result.paymentIntent);
 
-    if (paymentConfirm) {
-      const paymentInfo = {
-        pay,
-        displayName,
-        uid,
-        email,
-        selectTrainer,
-        transictionId: id,
-        endingDate,
-        today,
-      };
-      if (selectTrainer && paymentConfirm) {
-        CreatePaymentApi(paymentInfo);
-      } else {
-        toast.error("Select your trainer and pay the payment");
-      }
+          if (result.paymentIntent.id) {
+            const docRef = PinGenerate();
+            AppPaymentApi({
+              docRef,
+              transactionId: result.paymentIntent.id,
+              ...serviceDetails,
+            });
+            addShareDataWithTrainer({
+              docRef,
+              transactionId: result.paymentIntent.id,
+              ...serviceDetails,
+            });
+            updateDoc(doc(db, `authCollection/${serviceDetails.uid}`), {
+              docRef: docRef,
+            });
+          }
+        });
+      setpaymentError("");
     }
   };
 
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        <CardElement />
-        <div className="flex mt-5 justify-center">
+        <CardElement
+          options={{
+            style: {
+              base: {
+                fontSize: "16px",
+                color: "#ffffff",
+                "::placeholder": {
+                  color: "#aab7c4",
+                },
+              },
+              invalid: {
+                color: "#9e2146",
+              },
+            },
+          }}
+        />
+        <div className="flex justify-center">
           <button
-            className=" bg-orange p-2 rounded w-2/6 "
             type="submit"
-            disabled={!stripe || !elements}
+            className="cursor-pointer w-full mt-5 rounded-full p-1 bg-indigo-500 hover:bg-indigo-600"
+            disabled={!stripe || !elements || !clientSecret}
           >
             Pay
           </button>
         </div>
       </form>
-      <p className="text-red-600 text-center my-5">{errorMsg}</p>
+      {toggle ? (
+        <p className="my-3 flex justify-center items-center">
+          <Oval
+            height={25}
+            width={25}
+            color="#ffffff"
+            secondaryColor="#e6e6e6"
+            strokeWidth={5}
+          />
+        </p>
+      ) : (
+        <div className="text-center">
+          <p className="my-3 text-rose-600">{paymentError}</p>
+          {paymentSuccess.status && (
+            <>
+              <p>
+                Your payment{" "}
+                <span className="text-green-500">{paymentSuccess.status}</span>
+                <br />
+                <small>
+                  TxID:{" "}
+                  <span className="uppercase text-amber-300">
+                    {paymentSuccess.id}
+                  </span>
+                </small>
+              </p>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 };

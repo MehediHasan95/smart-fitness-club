@@ -3,17 +3,17 @@ import { useEffect, useState } from "react";
 import { db } from "./FirebaseConfig";
 
 const useNotice = () => {
-  const [notice, setNotice] = useState([]);
+  const [noticeCollection, setNoticeCollection] = useState([]);
 
   useEffect(() => {
     onSnapshot(
       query(collection(db, "noticeCollection"), orderBy("create", "asc")),
       (snapshot) => {
-        setNotice(snapshot.docs.map((e) => e.data()));
+        setNoticeCollection(snapshot.docs.map((e) => e.data()));
       }
     );
   }, []);
-  return [notice, setNotice];
+  return [noticeCollection, setNoticeCollection];
 };
 
 export default useNotice;

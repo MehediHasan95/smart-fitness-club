@@ -1,4 +1,10 @@
-import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEdit,
+  faEye,
+  faEyeSlash,
+  faShoppingBag,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import React, { useContext, useState } from "react";
@@ -6,12 +12,18 @@ import { toast } from "react-hot-toast";
 import { Oval } from "react-loader-spinner";
 import { AuthCreateApi, DeleteApi, UpdateApi } from "../../Api/AuthApi";
 import { GlobalContext } from "../../Context/ContextProvider";
-import { storage } from "../../Firebase/FirebaseConfig";
+import { db, storage } from "../../Firebase/FirebaseConfig";
+import { collection, onSnapshot } from "firebase/firestore";
+import ViewServices from "./ViewServices";
 
 const AuthList = () => {
-  const { authCollection, create } = useContext(GlobalContext);
+  const { today, authCollection, create, userPhoto, serviceCollection } =
+    useContext(GlobalContext);
   const [update, setUpdate] = useState({});
   const [loader, setLoader] = useState(false);
+  const [isTrainer, setIsTrainer] = useState(false);
+  const [viewServices, setViewServices] = useState([]);
+  const [buyNewService, setBuyNewService] = useState({});
 
   const handleDelete = (uid) => {
     DeleteApi(uid);
@@ -52,26 +64,59 @@ const AuthList = () => {
     const displayName = e.target.displayName.value;
     const email = e.target.email.value;
     const password = e.target.password.value;
-    const file = e.target.image.files;
+    const file = e.target.image?.files;
 
-    const storageRef = ref(storage, `gallery/${file[0].name}`);
-    const uploadTask = uploadBytesResumable(storageRef, file[0]);
-
-    uploadTask.on("state_changed", () => {
-      getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+    try {
+      if (role === "user") {
         const info = {
           role,
+          docRef: "docid",
           displayName,
           email,
           password,
           create,
-          downloadURL,
+          downloadURL: userPhoto,
         };
         AuthCreateApi(info);
-        setLoader(false);
         e.target.reset();
-      });
-    });
+        setLoader(false);
+      } else {
+        const storageRef = ref(storage, `gallery/${file[0].name}`);
+        const uploadTask = uploadBytesResumable(storageRef, file[0]);
+        uploadTask.on("state_changed", () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            const info = {
+              role,
+              displayName,
+              email,
+              password,
+              create,
+              downloadURL,
+            };
+            AuthCreateApi(info);
+            setLoader(false);
+            e.target.reset();
+          });
+        });
+      }
+    } catch (e) {
+      toast.error(e.message);
+    }
+  };
+
+  const handleServiceView = (list) => {
+    onSnapshot(
+      collection(db, `paymentCollection/${list.uid}/list`),
+      (snapshot) => setViewServices(snapshot.docs.map((e) => e.data()))
+    );
+  };
+
+  const handleBuyService = (list) => {
+    setBuyNewService(list);
+  };
+
+  const resetState = () => {
+    setViewServices([]);
   };
 
   return (
@@ -91,6 +136,7 @@ const AuthList = () => {
             <th className="p-1 lg:p-2 text-xs lg:text-base">SL</th>
             <th className="p-1 lg:p-2 text-xs lg:text-base">Name</th>
             <th className="p-1 lg:p-2 text-xs lg:text-base">Email</th>
+            <th className="p-1 lg:p-2 text-xs lg:text-base">Services</th>
             <th className="p-1 lg:p-2 text-xs lg:text-base">Role</th>
             <th className="p-1 lg:p-2 text-xs lg:text-base">Action</th>
           </tr>
@@ -106,6 +152,33 @@ const AuthList = () => {
                 {list.displayName}
               </td>
               <td className="p-1 lg:p-2 text-xs lg:text-base">{list.email}</td>
+              <td className="p-1 lg:p-2 text-xs lg:text-base">
+                {list.docRef ? (
+                  <>
+                    {list.docRef !== "docid" ? (
+                      <label
+                        htmlFor="my-modal-3"
+                        className="btn btn-xs text-xs w-11/12 hover:bg-green-500 outline-none border-none"
+                        onClick={() => handleServiceView(list)}
+                      >
+                        <span className="mr-1">View</span>
+                        <FontAwesomeIcon icon={faEye} />
+                      </label>
+                    ) : (
+                      <label
+                        htmlFor="my-modal-3"
+                        className="btn btn-xs text-xs w-11/12 bg-red-500 hover:bg-amber-500 outline-none border-none"
+                        onClick={() => handleBuyService(list)}
+                      >
+                        <span className="mr-1">Buy</span>
+                        <FontAwesomeIcon icon={faShoppingBag} />
+                      </label>
+                    )}
+                  </>
+                ) : (
+                  <FontAwesomeIcon icon={faEyeSlash} className="text-orange" />
+                )}
+              </td>
               <td className="p-1 lg:p-2 text-xs lg:text-base">
                 {list.role.toUpperCase()}
               </td>
@@ -186,6 +259,7 @@ const AuthList = () => {
           <form onSubmit={handleAdminCreateAccount} className="my-3">
             <select
               name="role"
+              onChange={() => setIsTrainer(!isTrainer)}
               className="w-full p-2 mb-3 border focus:border-orange outline-none rounded text-raisinBlack"
             >
               <option value="user">USER</option>
@@ -216,13 +290,15 @@ const AuthList = () => {
               placeholder="Password"
               required
             />
-            <input
-              type="file"
-              name="image"
-              accept="image/*"
-              className="w-full p-2 border focus:border-orange outline-none rounded text-raisinBlack"
-              required
-            />
+            {isTrainer && (
+              <input
+                type="file"
+                name="image"
+                accept="image/*"
+                className="w-full p-2 border focus:border-orange outline-none rounded text-raisinBlack"
+                required
+              />
+            )}
 
             <button className="bg-orange hover:bg-deepOrange text-white w-full p-2 mt-3 border-0 outline-none rounded flex justify-center items-center">
               {loader ? (
@@ -240,6 +316,15 @@ const AuthList = () => {
           </form>
         </label>
       </label>
+
+      <ViewServices
+        today={today}
+        authCollection={authCollection}
+        viewServices={viewServices}
+        serviceCollection={serviceCollection}
+        buyNewService={buyNewService}
+        resetState={resetState}
+      />
     </div>
   );
 };
