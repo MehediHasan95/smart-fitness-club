@@ -2,7 +2,7 @@ import { faSignOut } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { auth } from "../../Firebase/FirebaseConfig";
 
 const AdminDashboard = () => {
@@ -64,18 +64,34 @@ const AdminDashboard = () => {
           </div>
         </div>
         <div className="col-span-1 lg:col-span-4 pr-3">
-          <div className="py-2">
-            <button
-              onClick={() => {
-                signOut();
-                navigate("/");
-              }}
-              className="flex justify-center items-center ml-auto hover:text-red-600 hover:font-bold"
-            >
-              <span className="mr-1">LogOut</span>
-              <FontAwesomeIcon icon={faSignOut} />
-            </button>
+          <div className="py-2 flex justify-between items-center mx-3">
+            <div>
+              <h1>
+                Welcome{" "}
+                <span className="text-orange font-semibold ">
+                  {!loading && user?.displayName},{" "}
+                </span>
+                <span>{!loading && user?.email}</span>
+              </h1>
+            </div>
+
+            <div className="flex">
+              <Link to="/">
+                <span className="mx-5 text-orange hover:font-bold">Home</span>
+              </Link>
+              <button
+                onClick={() => {
+                  signOut();
+                  navigate("/");
+                }}
+                className="flex justify-center items-center ml-auto hover:text-red-600 hover:font-bold"
+              >
+                <span className="mr-2">Logout</span>
+                <FontAwesomeIcon icon={faSignOut} />
+              </button>
+            </div>
           </div>
+
           <Outlet />
         </div>
       </div>

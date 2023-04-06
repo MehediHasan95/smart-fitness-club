@@ -1,119 +1,194 @@
 import moment from "moment";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { CreateAttendenceApi } from "../../Api/AttendenceApi";
 import { GlobalContext } from "../../Context/ContextProvider";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../../Firebase/FirebaseConfig";
+import servicesCooking from "../../Assets/servicescooking.gif";
 
 const UserProfile = () => {
-  const [btnDisabled, setBtnDisabled] = useState(false);
+  const [restMinute, setRestMinute] = useState(0);
   const { paymentCollection, create, user, attendenceCollection } =
     useContext(GlobalContext);
-  console.log(attendenceCollection);
+
+  const lastAttendance = attendenceCollection.slice(-1)[0];
+
+  useEffect(() => {
+    let minutes = moment(lastAttendance?.create).diff(
+      moment().format("DD/MM/YYYY HH:mm:ss"),
+      "minute"
+    );
+    if (minutes > 0) {
+      setRestMinute(minutes);
+    } else {
+      setRestMinute(0);
+    }
+  }, [restMinute, lastAttendance]);
+
+  useEffect(() => {
+    for (const index in { ...paymentCollection }) {
+      const service = { ...paymentCollection }[index];
+      const diff = moment(service.endingDate).diff(
+        moment().format("yyyy-MM-DD"),
+        "days"
+      );
+      if (diff > 0) {
+        updateDoc(
+          doc(db, `paymentCollection/${user?.uid}/list`, service.docRef),
+          {
+            serviceEnd: diff,
+          }
+        );
+        updateDoc(
+          doc(
+            db,
+            `shareCollection/${service.selectedTrainer.uid}/list`,
+            service.docRef
+          ),
+          {
+            serviceEnd: diff,
+          }
+        );
+      } else {
+        updateDoc(
+          doc(db, `paymentCollection/${user?.uid}/list`, service.docRef),
+          {
+            serviceEnd: 0,
+          }
+        );
+        updateDoc(
+          doc(
+            db,
+            `shareCollection/${service.selectedTrainer.uid}/list`,
+            service.docRef
+          ),
+          {
+            serviceEnd: 0,
+          }
+        );
+      }
+    }
+  }, [paymentCollection, user]);
+
   const handleAttendence = (e) => {
     e.preventDefault();
     const userAttendence = e.target.attendence.value;
     if (userAttendence === "CONFIRM") {
       const attendenceInfo = {
-        create,
+        create: moment(
+          moment(create, "DD/MM/YYYY HH:mm:ss").add(1, "days")._d
+        ).format("DD/MM/YYYY HH:mm:ss"),
         userAttendence,
         id: user.uid,
       };
       CreateAttendenceApi(attendenceInfo);
       e.target.reset();
     } else {
-      toast.error("Type Error");
+      toast.error("Please type 'CONFIRM'");
     }
   };
 
   return (
-    <div className="grid lg:grid-cols-3 gap-2">
-      <div className="col-span-2">
-        <div>
-          {paymentCollection.map((e) => (
-            <div className="border p-5 m-3" key={e.uid}>
-              <h1 className="text-2xl font-bold "> {e.pay.title}</h1>
-              <h1 className="my-2">Duration: {e.pay.duration} Months</h1>
-              <h1 className="my-2">Amount: {e.pay.amount} </h1>
-              <h1 className="my-2">Trainer: {e.selectTrainer} </h1>
-              <h1 className="my-2">transiction Id: {e.transictionId} </h1>
-              <h1 className="my-2">
-                <span>From: {e.today}</span> <span>To: {e.endingDate}</span>
-              </h1>
-              <h1>
-                {moment(e.endingDate).diff(
-                  moment().format("yyyy-MM-DD"),
-                  "days"
-                ) > 0 ? (
-                  <>
-                    {moment(e.endingDate).diff(
-                      moment().format("yyyy-MM-DD"),
-                      "days"
-                    )}{" "}
-                    Days left
-                  </>
-                ) : (
-                  "Time Up"
-                )}{" "}
-              </h1>
-              <h1>
-                {moment(e.endingDate).diff(
-                  moment().format("yyyy-MM-DD"),
-                  "days"
-                ) > 0 ? (
-                  <button className="bg-green-600 px-5 py-1 rounded my-3 text-white">
-                    Active
-                  </button>
-                ) : (
-                  <button className="bg-red-800 px-5 py-1 rounded my-3 text-white">
-                    close
-                  </button>
-                )}
-              </h1>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="col-span-1">
-        <form onSubmit={handleAttendence}>
-          <input
-            className="w-full border my-3 p-2 outline-none text-center"
-            type="text"
-            name="attendence"
-            placeholder="type 'CONFIRM' "
-          />
-          <button
-          // disabled={btnDisabled}
-          // className={
-          //   btnDisabled
-          //     ? "w-full border  p-2 outline-none bg-orange text-white"
-          //     : "w-full border  p-2 outline-none bg-gray-400 text-white"
-          // }
-          >
-            Attendence
-          </button>
-        </form>
-        <div>
-          <table className="w-full text-center ">
-            <thead>
-              <tr className="bg-orange text-white">
-                <th>SL</th>
-                <th>Time</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody className="tableSl">
-              {attendenceCollection.map((e) => (
-                <tr key={e.id}>
-                  <td>{}</td>
-                  <td>{e.create}</td>
-                  <td>{e.userAttendence}</td>
+    <>
+      {paymentCollection.length > 0 ? (
+        <div className="grid lg:grid-cols-3 gap-2">
+          <div className="col-span-1 lg:col-span-2">
+            {paymentCollection?.map((e) => (
+              <div
+                key={e.uid}
+                className="py-3 px-5 flex justify-between items-center mb-2 bg-red-100 shadow"
+              >
+                <div>
+                  <h1 className="text-2xl font-semibold">{e.title}</h1>
+                  <div className="flex">
+                    <p>{e.duration} months</p>
+                    <span className="mx-2">||</span>
+                    <p>{e.amount}tk</p>
+                  </div>
+                  <p>
+                    TxID: <span className="uppercase">{e.transactionId}</span>
+                  </p>
+                  <p>Starting date: {e.today}</p>
+                  <p>Ending date: {e.endingDate}</p>
+                  <p>Trainer: {e.selectedTrainer?.displayName}</p>
+                  <p>
+                    Service:{" "}
+                    {e.serviceEnd > 0 ? (
+                      <span className="text-green-600 font-bold">ACTIVE</span>
+                    ) : (
+                      <span className="text-red-600 font-bold">CLOSE</span>
+                    )}
+                  </p>
+                </div>
+                <div className="text-center uppercase">
+                  {e.serviceEnd > 0 ? (
+                    <h1>
+                      <span className="text-3xl lg:text-8xl text-orange font-bold">
+                        {e.serviceEnd}
+                      </span>
+                      <br />
+                      <span>days left</span>
+                    </h1>
+                  ) : (
+                    <p>
+                      <span className="text-3xl lg:text-8xl text-orange font-bold">
+                        {e.serviceEnd}
+                      </span>
+                      <br />
+                      <span>Times up</span>
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="col-span-1">
+            <form onSubmit={handleAttendence}>
+              <input
+                className="w-full border mb-2 p-2 outline-none text-center"
+                type="text"
+                name="attendence"
+                placeholder="type 'CONFIRM'"
+              />
+              {!restMinute ? (
+                <button className="w-full  p-2 mb-2 outline-none bg-orange text-white">
+                  Submit
+                </button>
+              ) : (
+                <p className="p-2 mb-2 text-center">
+                  Time left{" "}
+                  <span className="text-orange font-semibold">
+                    ({restMinute})
+                  </span>{" "}
+                  minutes
+                </p>
+              )}
+            </form>
+            <div>
+              <table className="tableSl text-center w-full">
+                <tr className="bg-orange text-white">
+                  <th className="border">SL</th>
+                  <th className="border">Name</th>
+                  <th className="border">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+                {attendenceCollection.map((e) => (
+                  <tr key={e.id}>
+                    <td className="border">{}</td>
+                    <td className="border">{e.create.slice(0, 11)}</td>
+                    <td className="border">{e.userAttendence}</td>
+                  </tr>
+                ))}
+              </table>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      ) : (
+        <div className="grid place-items-center min-h-90">
+          <img src={servicesCooking} alt="" className="w-3/6" />
+        </div>
+      )}
+    </>
   );
 };
 

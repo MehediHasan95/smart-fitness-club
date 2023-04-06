@@ -158,9 +158,7 @@ const AddServices = () => {
               <p>Amount: {e.amount}</p>
               <ul className="list pl-2">
                 {e.features.map((e, index) => (
-                  <li key={index} className="">
-                    {e.features}
-                  </li>
+                  <li key={index}>{e.features}</li>
                 ))}
               </ul>
               <button

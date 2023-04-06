@@ -7,6 +7,7 @@ import useAuth from "../Firebase/useAuth";
 import useNotice from "../Firebase/useNotice";
 import usePayment from "../Firebase/usePayment";
 import useServices from "../Firebase/useServices";
+import useShare from "../Firebase/useShare";
 
 export const GlobalContext = createContext();
 const ContextProvider = ({ children }) => {
@@ -14,11 +15,13 @@ const ContextProvider = ({ children }) => {
   const [serviceCollection] = useServices();
   const [notice] = useNotice();
   const [paymentCollection] = usePayment();
+  const [shareCollection] = useShare();
   const [attendenceCollection] = useAttendence();
   const [user] = useAuthState(auth);
 
   const create = moment().format("DD/MM/YYYY HH:mm:ss");
   const today = moment().format("yyyy-MM-DD");
+  const userPhoto = "https://user";
 
   const shares = {
     authCollection,
@@ -27,7 +30,9 @@ const ContextProvider = ({ children }) => {
     create,
     today,
     paymentCollection,
+    shareCollection,
     user,
+    userPhoto,
     attendenceCollection,
   };
 

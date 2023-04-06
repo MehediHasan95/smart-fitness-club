@@ -12,24 +12,23 @@ import { toast } from "react-hot-toast";
 import { AuthApi } from "../../Api/AuthApi";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { GlobalContext } from "../../Context/ContextProvider";
-import { useAuthState } from "react-firebase-hooks/auth";
 
 const Authentication = () => {
   const [toggle, setToggle] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [spinner, setSpinner] = useState(false);
-  const [user, loading] = useAuthState(auth);
 
-  const { create } = useContext(GlobalContext);
+  const { create, userPhoto } = useContext(GlobalContext);
   const navigate = useNavigate();
-
   const location = useLocation();
+
   const from = location.state?.from?.pathname || "/";
 
   // if (user) {
   //   navigate(from, { replace: true });
   // }
+
   // main state
   const [role, setRole] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -65,6 +64,7 @@ const Authentication = () => {
         const { uid } = result.user;
         updateProfile(auth.currentUser, {
           displayName: displayName,
+          photoURL: userPhoto,
         }).then(() => {
           setSpinner(false);
           const authInfo = {
