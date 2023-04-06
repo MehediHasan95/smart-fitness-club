@@ -1,23 +1,31 @@
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faCircleArrowLeft, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
-import { useState } from "react";
-
+import { useContext, useEffect, useState } from "react";
 import Payment from "../Payment/Payment";
+import { GlobalContext } from "../../Context/ContextProvider";
 
-function ViewServices({
-  today,
-  authCollection,
-  viewServices,
-  serviceCollection,
-  buyNewService,
-  resetState,
-}) {
-  const [chooseTrainer, setChooseTrainer] = useState("");
+function ViewServices({ viewServices, buyNewService, resetState }) {
+  const {
+    today,
+    serviceCollection,
+    authCollection,
+    successfullPayment,
+    setSuccessfullPayment,
+  } = useContext(GlobalContext);
+
+  const [trainerId, setChooseTrainer] = useState("");
   const [selectedService, setSelectedService] = useState({});
+  const [trainerList, setTrainerList] = useState([]);
+  const [selectedTrainer, setSelectedTrainer] = useState({});
 
-  const trainer = authCollection.filter((e) => e.role === "trainer");
-  const selectedTrainer = trainer.find((e) => e.uid === chooseTrainer);
+  useEffect(() => {
+    setTrainerList(authCollection.filter((e) => e.role === "trainer"));
+  }, [authCollection]);
+
+  useEffect(() => {
+    setSelectedTrainer(trainerList.find((e) => e.uid === trainerId));
+  }, [trainerId, trainerList]);
 
   const endingDate = moment(
     moment(today, "yyyy-MM-DD").add(selectedService?.duration, "month")._d
@@ -38,7 +46,14 @@ function ViewServices({
     setSelectedService(service);
   };
 
-  console.log(selectedService);
+  const handleBackBtn = () => {
+    setSelectedTrainer(undefined);
+  };
+
+  const handleCloseModal = () => {
+    setSuccessfullPayment({});
+    setSelectedTrainer(undefined);
+  };
 
   return (
     <>
@@ -94,14 +109,19 @@ function ViewServices({
           <div className="modal">
             <div className="modal-box max-w-4xl relative">
               <label
-                onClick={() => resetState()}
+                onClick={() => {
+                  resetState();
+                  handleCloseModal();
+                }}
                 htmlFor="my-modal-3"
                 className="btn btn-sm btn-circle absolute right-2 top-2"
               >
                 <FontAwesomeIcon icon={faXmark} />
               </label>
-              <h3 className="text-lg font-bold">
-                {selectedService.id ? "Payment now" : "Purchase any services"}
+              <h3 className="text-lg font-bold text-center">
+                {selectedTrainer
+                  ? "Payment now"
+                  : "Which service do you want to buy"}
               </h3>
               <div className="py-4">
                 {!selectedTrainer ? (
@@ -126,12 +146,12 @@ function ViewServices({
                                 handleChooseService(service);
                                 setChooseTrainer(e.target.value);
                               }}
-                              className="text-center"
+                              className="text-center cursor-pointer"
                             >
                               <option selected disabled>
                                 Selected
                               </option>
-                              {trainer.map((e) => (
+                              {trainerList.map((e) => (
                                 <option key={e.uid} value={e.uid}>
                                   {e.displayName}
                                 </option>
@@ -143,9 +163,40 @@ function ViewServices({
                     </tbody>
                   </table>
                 ) : (
-                  <div className="text-white">
-                    <p>Payment now</p>
-                    <Payment serviceDetails={serviceDetails} />
+                  <div>
+                    {successfullPayment.id ? (
+                      <div className="text-center">
+                        <p>
+                          Your payment{" "}
+                          <span className="text-green-500">
+                            {successfullPayment.status}
+                          </span>
+                          <br />
+                          <small>
+                            TxID:{" "}
+                            <span className="uppercase text-amber-300">
+                              {successfullPayment.id}
+                            </span>
+                          </small>
+                        </p>
+                      </div>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => handleBackBtn()}
+                          className="text-raisinBlack hover:text-red-600"
+                        >
+                          <FontAwesomeIcon
+                            icon={faCircleArrowLeft}
+                            className="mr-1"
+                          />
+                          Back
+                        </button>
+                        <div className="text-white">
+                          <Payment serviceDetails={serviceDetails} />
+                        </div>
+                      </>
+                    )}
                   </div>
                 )}
               </div>

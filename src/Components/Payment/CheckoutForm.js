@@ -15,7 +15,7 @@ const CheckoutForm = ({ serviceDetails }) => {
   const [clientSecret, setClientSecret] = useState("");
   const [paymentSuccess, setpaymentSuccess] = useState({});
   const [toggle, setToggle] = useState(false);
-  const { user } = useContext(GlobalContext);
+  const { user, setSuccessfullPayment } = useContext(GlobalContext);
 
   useEffect(() => {
     if (serviceDetails.amount) {
@@ -62,6 +62,7 @@ const CheckoutForm = ({ serviceDetails }) => {
         .then(function (result) {
           setToggle(false);
           setpaymentSuccess(result.paymentIntent);
+          setSuccessfullPayment(result.paymentIntent);
 
           if (result.paymentIntent.id) {
             const docRef = PinGenerate();

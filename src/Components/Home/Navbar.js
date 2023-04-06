@@ -140,7 +140,7 @@ const Navbar = () => {
                 </li>
               ) : user?.photoURL === null ? (
                 <li className="ml-7 hover:text-orange hover:font-bold hover:scale-105 duration-300 hover:duration-300">
-                  <Link to="/admin-dashboard">A.Dashboard</Link>
+                  <Link to="/admin-dashboard/list">A.Dashboard</Link>
                 </li>
               ) : (
                 <li className="ml-7 hover:text-orange hover:font-bold hover:scale-105 duration-300 hover:duration-300">

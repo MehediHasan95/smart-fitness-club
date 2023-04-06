@@ -2,7 +2,7 @@ import {
   faEdit,
   faEye,
   faEyeSlash,
-  faShoppingBag,
+  faShoppingCart,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -17,7 +17,7 @@ import { collection, onSnapshot } from "firebase/firestore";
 import ViewServices from "./ViewServices";
 
 const AuthList = () => {
-  const { today, authCollection, create, userPhoto, serviceCollection } =
+  const { authCollection, create, userPhoto, serviceCollection } =
     useContext(GlobalContext);
   const [update, setUpdate] = useState({});
   const [loader, setLoader] = useState(false);
@@ -171,7 +171,7 @@ const AuthList = () => {
                         onClick={() => handleBuyService(list)}
                       >
                         <span className="mr-1">Buy</span>
-                        <FontAwesomeIcon icon={faShoppingBag} />
+                        <FontAwesomeIcon icon={faShoppingCart} />
                       </label>
                     )}
                   </>
@@ -318,10 +318,7 @@ const AuthList = () => {
       </label>
 
       <ViewServices
-        today={today}
-        authCollection={authCollection}
         viewServices={viewServices}
-        serviceCollection={serviceCollection}
         buyNewService={buyNewService}
         resetState={resetState}
       />
