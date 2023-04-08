@@ -12,6 +12,9 @@ import UserNotices from "../Components/Users/UserNotices";
 import UserProfile from "../Components/Users/UserProfile";
 import Main from "../Layout/Main";
 import PrivateRouter from "./PrivateRouter";
+import TrainerNotice from "../Components/Trainer/TrainerNotice";
+import TrainerProfile from "../Components/Trainer/TrainerProfile";
+import TrainerViewList from "../Components/Trainer/TrainerViewList";
 
 const router = createBrowserRouter([
   {
@@ -43,7 +46,20 @@ const router = createBrowserRouter([
         <TrainerDashboard />
       </PrivateRouter>
     ),
-    children: [{}],
+    children: [
+      {
+        path: "profile",
+        element: <TrainerProfile />,
+      },
+      {
+        path: "notice",
+        element: <TrainerNotice />,
+      },
+      {
+        path: "view-list",
+        element: <TrainerViewList />,
+      },
+    ],
   },
   {
     path: "/admin-dashboard",

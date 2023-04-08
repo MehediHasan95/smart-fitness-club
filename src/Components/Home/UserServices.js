@@ -149,8 +149,14 @@ const UserServices = () => {
           )}
         </div>
       ) : (
-        <div className="bg-raisinBlack min-h-screen grid place-items-center">
-          <h1 className="text-white text-center text-2xl">
+        <div className="bg-raisinBlack min-h-screen flex items-center justify-center text-white relative">
+          <Link to="/">
+            <button className="px-4 py-1 m-3 flex items-center absolute top-0 left-0">
+              <FontAwesomeIcon icon={faArrowLeft} />
+              <span className="ml-2">Go to Home</span>
+            </button>
+          </Link>
+          <h1 className="text-white text-center text-2xl ">
             Admins and Trainers can't purchase any services 😔
           </h1>
         </div>
