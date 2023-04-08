@@ -1,5 +1,5 @@
 import moment from "moment";
-import React, { createContext } from "react";
+import React, { createContext, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../Firebase/FirebaseConfig";
 import useAttendence from "../Firebase/useAttendence";
@@ -18,6 +18,7 @@ const ContextProvider = ({ children }) => {
   const [shareCollection] = useShare();
   const [attendenceCollection] = useAttendence();
   const [user] = useAuthState(auth);
+  const [successfullPayment, setSuccessfullPayment] = useState({});
 
   const create = moment().format("DD/MM/YYYY HH:mm:ss");
   const today = moment().format("yyyy-MM-DD");
@@ -34,7 +35,11 @@ const ContextProvider = ({ children }) => {
     user,
     userPhoto,
     attendenceCollection,
+    setSuccessfullPayment,
+    successfullPayment,
   };
+
+  console.log("Context", successfullPayment);
 
   return (
     <GlobalContext.Provider value={shares}>{children}</GlobalContext.Provider>

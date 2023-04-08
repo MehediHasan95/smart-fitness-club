@@ -141,9 +141,9 @@ const UserServices = () => {
             </div>
           ) : (
             <div className="min-h-screen grid place-items-center">
-              <h1 className="text-2xl">
-                You can buy the next service after {previousServious.serviceEnd}{" "}
-                days
+              <h1 className="text-2xl text-center">
+                You cannot purchase any other service while <br /> you are
+                running the {previousServious.title} service
               </h1>
             </div>
           )}

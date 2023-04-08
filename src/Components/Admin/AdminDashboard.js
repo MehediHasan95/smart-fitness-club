@@ -1,4 +1,4 @@
-import { faSignOut } from "@fortawesome/free-solid-svg-icons";
+import { faHome, faSignOut } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
@@ -77,7 +77,9 @@ const AdminDashboard = () => {
 
             <div className="flex">
               <Link to="/">
-                <span className="mx-5 text-orange hover:font-bold">Home</span>
+                <span className="mx-5 text-orange hover:font-bold">
+                  <FontAwesomeIcon icon={faHome} /> Home
+                </span>
               </Link>
               <button
                 onClick={() => {

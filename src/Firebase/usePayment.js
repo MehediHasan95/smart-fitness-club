@@ -10,7 +10,7 @@ const usePayment = () => {
     onSnapshot(
       query(
         collection(db, `paymentCollection/${user?.uid}/list`),
-        orderBy("create", "desc")
+        orderBy("create", "asc")
       ),
       (snapshot) => {
         setPaymentCollection(snapshot.docs.map((e) => e.data()));

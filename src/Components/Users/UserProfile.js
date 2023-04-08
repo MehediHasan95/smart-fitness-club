@@ -157,7 +157,7 @@ const UserProfile = () => {
                 </button>
               ) : (
                 <p className="p-2 mb-2 text-center">
-                  Time left{" "}
+                  Next appearance after
                   <span className="text-orange font-semibold">
                     ({restMinute})
                   </span>{" "}
