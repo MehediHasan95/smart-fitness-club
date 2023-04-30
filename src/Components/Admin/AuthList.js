@@ -23,13 +23,7 @@ import {
 import ViewServices from "./ViewServices";
 
 const AuthList = () => {
-  const {
-    authCollection,
-    create,
-    userPhoto,
-    paymentCollection,
-    shareCollection,
-  } = useContext(GlobalContext);
+  const { authCollection, create, userPhoto } = useContext(GlobalContext);
   const [update, setUpdate] = useState({});
   const [loader, setLoader] = useState(false);
   const [isTrainer, setIsTrainer] = useState(false);
