@@ -20,20 +20,6 @@ const TrainerDashboard = () => {
           <hr className="my-3" />
 
           <div>
-            <NavLink to="profile">
-              {({ isActive }) => (
-                <button
-                  className={
-                    isActive
-                      ? "bg-orange text-white w-full py-2 mb-3 shadow"
-                      : "w-full py-2 mb-3 bg-gray-700"
-                  }
-                >
-                  Profile
-                </button>
-              )}
-            </NavLink>
-
             <NavLink to="view-list">
               {({ isActive }) => (
                 <button

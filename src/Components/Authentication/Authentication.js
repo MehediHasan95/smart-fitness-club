@@ -76,9 +76,9 @@ const Authentication = () => {
           };
           AuthApi(authInfo);
           if (role === "user") {
-            navigate("/user-dashboard");
+            navigate("/");
           } else if (role === "trainer") {
-            navigate("/trainer-dashboard");
+            navigate("/");
           } else if (role === "admin") {
             navigate("/admin-dashboard/list");
           }
@@ -106,11 +106,11 @@ const Authentication = () => {
               setSpinner(false);
               if (result) {
                 if (role === "user") {
-                  navigate("/user-dashboard/profile");
+                  navigate("/");
                 } else if (role === "trainer") {
-                  navigate("/trainer-dashboard");
+                  navigate("/");
                 } else if (role === "admin") {
-                  navigate("/admin-dashboard/list");
+                  navigate("/");
                 }
               }
             })

@@ -78,13 +78,13 @@ const CheckoutForm = ({ serviceDetails }) => {
             });
             updateDoc(doc(db, `authCollection/${serviceDetails.uid}`), {
               docRef: docRef,
+              trainerId: serviceDetails.selectedTrainer.uid,
             });
           }
         });
       setpaymentError("");
     }
   };
-
   return (
     <div>
       <form onSubmit={handleSubmit}>

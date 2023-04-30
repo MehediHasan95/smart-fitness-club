@@ -13,20 +13,56 @@ import { Oval } from "react-loader-spinner";
 import { AuthCreateApi, DeleteApi, UpdateApi } from "../../Api/AuthApi";
 import { GlobalContext } from "../../Context/ContextProvider";
 import { db, storage } from "../../Firebase/FirebaseConfig";
-import { collection, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  query,
+} from "firebase/firestore";
 import ViewServices from "./ViewServices";
 
 const AuthList = () => {
-  const { authCollection, create, userPhoto, serviceCollection } =
-    useContext(GlobalContext);
+  const {
+    authCollection,
+    create,
+    userPhoto,
+    paymentCollection,
+    shareCollection,
+  } = useContext(GlobalContext);
   const [update, setUpdate] = useState({});
   const [loader, setLoader] = useState(false);
   const [isTrainer, setIsTrainer] = useState(false);
   const [viewServices, setViewServices] = useState([]);
   const [buyNewService, setBuyNewService] = useState({});
 
-  const handleDelete = (uid) => {
-    DeleteApi(uid);
+  const handleDelete = async (list) => {
+    DeleteApi(list.uid);
+    onSnapshot(
+      query(collection(db, `paymentCollection/${list?.uid}/list`)),
+      (snapshot) => {
+        for (const element of snapshot.docs.map((e) => e.data())) {
+          deleteDoc(
+            doc(db, `paymentCollection/${element?.uid}/list`, element.docRef)
+          );
+        }
+      }
+    );
+    onSnapshot(
+      query(collection(db, `shareCollection/${list?.trainerId}/list`)),
+      (snapshot) => {
+        for (const element of snapshot.docs.map((e) => e.data())) {
+          console.log(element);
+          deleteDoc(
+            doc(
+              db,
+              `shareCollection/${element?.selectedTrainer.uid}/list`,
+              element.docRef
+            )
+          );
+        }
+      }
+    );
   };
 
   const handleRoleUpdate = (e) => {
@@ -184,7 +220,7 @@ const AuthList = () => {
               </td>
               <td className="p-1 lg:p-2 text-xs lg:text-base flex justify-evenly items-center">
                 <FontAwesomeIcon
-                  onClick={() => handleDelete(list.uid)}
+                  onClick={() => handleDelete(list)}
                   icon={faTrash}
                   className="hover:text-orange"
                 />

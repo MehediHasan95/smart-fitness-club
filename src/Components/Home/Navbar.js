@@ -144,7 +144,7 @@ const Navbar = () => {
                 </li>
               ) : (
                 <li className="ml-7 hover:text-orange hover:font-bold hover:scale-105 duration-300 hover:duration-300">
-                  <Link to="/trainer-dashboard">T.Dashboard</Link>
+                  <Link to="/trainer-dashboard/view-list">T.Dashboard</Link>
                 </li>
               )
             ) : (
