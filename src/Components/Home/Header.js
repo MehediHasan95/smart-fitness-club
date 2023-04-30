@@ -1,5 +1,6 @@
 import React from "react";
 import { Carousel } from "react-responsive-carousel";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   return (
@@ -21,9 +22,11 @@ const Header = () => {
               Than Your Excuses.
             </h1>
 
-            <button className="bg-orange text-white px-4 py-2 hover:bg-deepOrange hover:scale-105 duration-300 hover:duration-300 border-0 outline-none rounded">
-              Get Started
-            </button>
+            <Link to="/authentication">
+              <button className="bg-orange text-white px-4 py-2 hover:bg-deepOrange hover:scale-105 duration-300 hover:duration-300 border-0 outline-none rounded">
+                Get Started
+              </button>
+            </Link>
           </div>
         </div>
 
@@ -35,9 +38,11 @@ const Header = () => {
               <br />
               Than Your Excuses.
             </h1>
-            <button className="bg-orange text-white px-4 py-2 hover:bg-deepOrange hover:scale-105 duration-300 hover:duration-300 border-0 outline-none rounded">
-              Get Started
-            </button>
+            <Link to="/authentication">
+              <button className="bg-orange text-white px-4 py-2 hover:bg-deepOrange hover:scale-105 duration-300 hover:duration-300 border-0 outline-none rounded">
+                Get Started
+              </button>
+            </Link>
           </div>
         </div>
 
@@ -49,9 +54,11 @@ const Header = () => {
               <br />
               Than Your Excuses.
             </h1>
-            <button className="bg-orange text-white px-4 py-2 hover:bg-deepOrange hover:scale-105 duration-300 hover:duration-300 border-0 outline-none rounded">
-              Get Started
-            </button>
+            <Link to="/authentication">
+              <button className="bg-orange text-white px-4 py-2 hover:bg-deepOrange hover:scale-105 duration-300 hover:duration-300 border-0 outline-none rounded">
+                Get Started
+              </button>
+            </Link>
           </div>
         </div>
       </Carousel>

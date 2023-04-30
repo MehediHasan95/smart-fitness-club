@@ -25,7 +25,7 @@ const UserProfile = () => {
       setRestMinute(0);
     }
   }, [restMinute, lastAttendance]);
-
+  console.log(restMinute);
   useEffect(() => {
     for (const index in { ...paymentCollection }) {
       const service = { ...paymentCollection }[index];
