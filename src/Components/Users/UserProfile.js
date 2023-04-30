@@ -15,10 +15,11 @@ const UserProfile = () => {
   const lastAttendance = attendenceCollection.slice(-1)[0];
 
   useEffect(() => {
-    let minutes = moment(lastAttendance?.create).diff(
+    let minutes = moment(lastAttendance?.next).diff(
       moment().format("DD/MM/YYYY HH:mm:ss"),
-      "minute"
+      "minutes"
     );
+
     if (minutes > 0) {
       setRestMinute(minutes);
     } else {
@@ -76,12 +77,14 @@ const UserProfile = () => {
     const userAttendence = e.target.attendence.value;
     if (userAttendence === "CONFIRM") {
       const attendenceInfo = {
-        create: moment(
+        next: moment(
           moment(create, "DD/MM/YYYY HH:mm:ss").add(1, "days")._d
         ).format("DD/MM/YYYY HH:mm:ss"),
+        create,
         userAttendence,
         id: user.uid,
       };
+
       CreateAttendenceApi(attendenceInfo);
       e.target.reset();
     } else {
@@ -156,30 +159,30 @@ const UserProfile = () => {
                   Submit
                 </button>
               ) : (
-                <p className="p-2 mb-2 text-center">
-                  Next appearance after
-                  <span className="text-orange font-semibold">
-                    ({restMinute})
-                  </span>{" "}
-                  minutes
+                <p className="p-2 mb-2 text-center text-green-600">
+                  Attendance complete
                 </p>
               )}
             </form>
             <div>
-              <table className="tableSl text-center w-full">
-                <tr className="bg-orange text-white">
-                  <th className="border">SL</th>
-                  <th className="border">Name</th>
-                  <th className="border">Action</th>
-                </tr>
-                {attendenceCollection.map((e) => (
-                  <tr key={e.id}>
-                    <td className="border">{}</td>
-                    <td className="border">{e.create.slice(0, 11)}</td>
-                    <td className="border">{e.userAttendence}</td>
+              {attendenceCollection.length > 0 ? (
+                <table className="tableSl text-center w-full">
+                  <tr className="bg-orange text-white">
+                    <th className="border">SL</th>
+                    <th className="border">Name</th>
+                    <th className="border">Action</th>
                   </tr>
-                ))}
-              </table>
+                  {attendenceCollection.map((e) => (
+                    <tr key={e.id}>
+                      <td className="border">{}</td>
+                      <td className="border">{e.create.slice(0, 11)}</td>
+                      <td className="border">{e.userAttendence && "✅"}</td>
+                    </tr>
+                  ))}
+                </table>
+              ) : (
+                <p className="text-center">Attendance not found</p>
+              )}
             </div>
           </div>
         </div>

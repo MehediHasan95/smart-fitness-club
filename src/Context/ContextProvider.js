@@ -3,7 +3,7 @@ import React, { createContext, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../Firebase/FirebaseConfig";
 import useAttendence from "../Firebase/useAttendence";
-import useAuth from "../Firebase/useAuth";
+import { useAdmin, useAuth } from "../Firebase/useAuth";
 import useNotice from "../Firebase/useNotice";
 import usePayment from "../Firebase/usePayment";
 import useServices from "../Firebase/useServices";
@@ -12,6 +12,7 @@ import useShare from "../Firebase/useShare";
 export const GlobalContext = createContext();
 const ContextProvider = ({ children }) => {
   const [authCollection] = useAuth();
+  const [adminCollection] = useAdmin();
   const [serviceCollection] = useServices();
   const [notice] = useNotice();
   const [paymentCollection] = usePayment();
@@ -25,6 +26,7 @@ const ContextProvider = ({ children }) => {
   const userPhoto = "https://user";
 
   const shares = {
+    adminCollection,
     authCollection,
     serviceCollection,
     notice,
@@ -38,8 +40,6 @@ const ContextProvider = ({ children }) => {
     setSuccessfullPayment,
     successfullPayment,
   };
-
-  console.log("Context", successfullPayment);
 
   return (
     <GlobalContext.Provider value={shares}>{children}</GlobalContext.Provider>

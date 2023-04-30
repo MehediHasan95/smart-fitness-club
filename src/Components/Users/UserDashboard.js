@@ -1,4 +1,4 @@
-import { faSignOut } from "@fortawesome/free-solid-svg-icons";
+import { faHome, faSignOut } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
@@ -14,10 +14,11 @@ const UserDashboard = () => {
       <div className="grid col-span-1 lg:grid-cols-5 lg:min-h-screen">
         <div className="col-span-1 p-3 bg-raisinBlack text-white">
           <div className="text-center">
-            <h1 className="text-2xl font-semibold uppercase">Dashboard</h1>
+            <h1 className="text-2xl lg:text-3xl font-bold font-lobster">
+              Fitness <span className="text-orange">Club</span>
+            </h1>
           </div>
           <hr className="my-3" />
-
           <div>
             <NavLink to="profile">
               {({ isActive }) => (
@@ -62,7 +63,9 @@ const UserDashboard = () => {
 
             <div className="flex">
               <Link to="/">
-                <span className="mx-5 text-orange hover:font-bold">Home</span>
+                <span className="mx-5 text-orange hover:font-bold">
+                  <FontAwesomeIcon icon={faHome} /> Home
+                </span>
               </Link>
               <button
                 onClick={() => {

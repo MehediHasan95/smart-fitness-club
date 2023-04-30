@@ -15,4 +15,17 @@ const useAuth = () => {
   return [authCollection, setAuthCollection];
 };
 
-export default useAuth;
+const useAdmin = () => {
+  const [adminCollection, setAdminCollection] = useState([]);
+  useEffect(() => {
+    onSnapshot(
+      query(collection(db, "authCollection"), where("role", "==", "admin")),
+      (snapshot) => {
+        setAdminCollection(snapshot.docs.map((e) => e.data()));
+      }
+    );
+  }, []);
+  return [adminCollection, setAdminCollection];
+};
+
+export { useAuth, useAdmin };

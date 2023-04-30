@@ -1,12 +1,20 @@
 import { faHome, faSignOut } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { auth } from "../../Firebase/FirebaseConfig";
+import { GlobalContext } from "../../Context/ContextProvider";
 
 const AdminDashboard = () => {
-  const [user, loading] = useAuthState(auth);
+  const [user] = useAuthState(auth);
+  const [adminInfo, setAdminInfo] = useState({});
+  const { adminCollection } = useContext(GlobalContext);
+
+  useEffect(() => {
+    setAdminInfo(adminCollection.find((e) => e.uid === user.uid));
+  }, [adminCollection, user.uid]);
+
   const [signOut] = useSignOut(auth);
   const navigate = useNavigate();
   return (
@@ -14,8 +22,9 @@ const AdminDashboard = () => {
       <div className="grid col-span-1 lg:grid-cols-5 lg:min-h-screen">
         <div className="col-span-1 p-3 bg-raisinBlack text-white">
           <div className="text-center">
-            <h1 className="text-2xl">{!loading && user?.displayName}</h1>
-            <p className="text-xs">{!loading && user?.email}</p>
+            <h1 className="text-2xl lg:text-3xl font-bold font-lobster">
+              Fitness <span className="text-orange">Club</span>
+            </h1>
           </div>
           <hr className="my-3" />
 
@@ -57,7 +66,7 @@ const AdminDashboard = () => {
                       : "w-full py-2 mb-3 bg-gray-700"
                   }
                 >
-                  Notices
+                  Write Notices
                 </button>
               )}
             </NavLink>
@@ -69,9 +78,9 @@ const AdminDashboard = () => {
               <h1>
                 Welcome{" "}
                 <span className="text-orange font-semibold ">
-                  {!loading && user?.displayName},{" "}
+                  {adminInfo?.displayName},{" "}
                 </span>
-                <span>{!loading && user?.email}</span>
+                <span>{adminInfo?.email}</span>
               </h1>
             </div>
 
