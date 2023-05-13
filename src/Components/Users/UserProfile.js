@@ -14,12 +14,15 @@ const UserProfile = () => {
 
   const lastAttendance = attendenceCollection.slice(-1)[0];
 
+  console.log(lastAttendance);
+
   useEffect(() => {
     let minutes = moment(lastAttendance?.next).diff(
       moment().format("DD/MM/YYYY HH:mm:ss"),
       "minutes"
     );
 
+    console.log(minutes);
     if (minutes > 0) {
       setRestMinute(minutes);
     } else {
