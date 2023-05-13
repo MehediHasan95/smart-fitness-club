@@ -17,10 +17,11 @@ const About = () => {
             Become Better
           </h1>
           <p className="mb-3">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Totam,
-            deleniti saepe fuga, assumenda mollitia ea, porro voluptate
-            quibusdam consequuntur nesciunt blanditiis id aliquam? Eius, quae? A
-            ab voluptatibus iure architecto?
+            A gym is a place where people go to train and exercise, but also to
+            unwind, socialize, and recharge. Therefore, a good gym is a facility
+            that promotes physical activity, provides a safe, functional, and
+            comfortable workout environment, and creates a pleasant and
+            enjoyable atmosphere for recreation and socialization.
           </p>
           <div className="grid grid-cols-1 lg:grid-cols-2">
             <div className="col-span-1 p-3">
@@ -28,7 +29,10 @@ const About = () => {
                 <FontAwesomeIcon icon={faCheck} className="text-orange mr-2" />
                 Body And Mind
               </h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+              <p>
+                Body and mind is an approach to understand the relationship
+                between the human body and mind .
+              </p>
             </div>
             <div className="col-span-1 p-3">
               <h3 className="text-xl mb-2 font-semibold text-white">
@@ -36,7 +40,10 @@ const About = () => {
                 <FontAwesomeIcon icon={faCheck} className="text-orange mr-2" />
                 Healthy Life
               </h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+              <p>
+                A way of living that LOWERS THE RISK of being seriously ill or
+                dying early.
+              </p>
             </div>
             <div className="col-span-1 p-3">
               <h3 className="text-xl mb-2 font-semibold text-white">
@@ -44,7 +51,10 @@ const About = () => {
                 <FontAwesomeIcon icon={faCheck} className="text-orange mr-2" />
                 Strategies
               </h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+              <p>
+                Moving your body and getting the recommended amount of physical
+                activity for your age is critical to good health.
+              </p>
             </div>
             <div className="col-span-1 p-3">
               <h3 className="text-xl mb-2 font-semibold text-white">
@@ -52,7 +62,11 @@ const About = () => {
                 <FontAwesomeIcon icon={faCheck} className="text-orange mr-2" />
                 Workout
               </h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+              <p>
+                Start slowly and build up gradually. Give yourself plenty of
+                time to warm up and cool down with easy walking or gentle
+                stretching.
+              </p>
             </div>
           </div>
         </div>

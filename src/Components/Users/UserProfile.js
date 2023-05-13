@@ -14,6 +14,8 @@ const UserProfile = () => {
 
   const lastAttendance = attendenceCollection.slice(-1)[0];
 
+  console.log(lastAttendance);
+
   useEffect(() => {
     const bigNum = parseInt(lastAttendance?.next.slice(0, 2) || 0);
     const smallNum = parseInt(create.slice(0, 2));
