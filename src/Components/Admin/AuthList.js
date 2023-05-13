@@ -117,6 +117,7 @@ const AuthList = () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             const info = {
               role,
+              docRef: null,
               displayName,
               email,
               password,
