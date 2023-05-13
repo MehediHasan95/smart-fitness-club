@@ -8,27 +8,26 @@ import { db } from "../../Firebase/FirebaseConfig";
 import servicesCooking from "../../Assets/servicescooking.gif";
 
 const UserProfile = () => {
-  const [restMinute, setRestMinute] = useState(0);
   const { paymentCollection, create, user, attendenceCollection } =
     useContext(GlobalContext);
+  const [isAttendent, setIsAttendent] = useState(false);
 
   const lastAttendance = attendenceCollection.slice(-1)[0];
 
   console.log(lastAttendance);
 
   useEffect(() => {
-    let minutes = moment(lastAttendance?.next).diff(
-      moment().format("DD/MM/YYYY HH:mm:ss"),
-      "minutes"
-    );
+    const bigNum = parseInt(lastAttendance?.next.slice(0, 2) || 0);
+    const smallNum = parseInt(create.slice(0, 2));
 
-    console.log(minutes);
-    if (minutes > 0) {
-      setRestMinute(minutes);
+    if (bigNum > smallNum) {
+      setIsAttendent(true);
     } else {
-      setRestMinute(0);
+      setIsAttendent(false);
     }
-  }, [restMinute, lastAttendance]);
+  }, [lastAttendance, create]);
+
+  console.log(isAttendent);
 
   useEffect(() => {
     for (const index in { ...paymentCollection }) {
@@ -150,23 +149,25 @@ const UserProfile = () => {
             ))}
           </div>
           <div className="col-span-1">
-            <form onSubmit={handleAttendence}>
-              <input
-                className="w-full border mb-2 p-2 outline-none text-center"
-                type="text"
-                name="attendence"
-                placeholder="type 'CONFIRM'"
-              />
-              {!restMinute ? (
+            {!isAttendent && (
+              <form onSubmit={handleAttendence}>
+                <input
+                  className="w-full border mb-2 p-2 outline-none text-center"
+                  type="text"
+                  name="attendence"
+                  placeholder="type 'CONFIRM'"
+                />
+
                 <button className="w-full  p-2 mb-2 outline-none bg-orange text-white">
                   Submit
                 </button>
-              ) : (
-                <p className="p-2 mb-2 text-center text-green-600">
-                  Attendance complete
-                </p>
-              )}
-            </form>
+              </form>
+            )}
+            {isAttendent && (
+              <p className="p-2 mb-2 text-center text-green-600">
+                Attendance complete
+              </p>
+            )}
             <div>
               {attendenceCollection.length > 0 ? (
                 <table className="tableSl text-center w-full">
